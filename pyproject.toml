@@ -1,0 +1,46 @@
+[project]
+name = "tether"
+version = "0.1.0"
+description = "Privacy-first, local-only thought ingestion engine"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "pystray>=0.19.5",
+    "pillow>=10.0.0",
+    "keyboard>=0.13.5",
+    "sounddevice>=0.4.6",
+    "faster-whisper>=1.0.0",
+    "ollama>=0.1.0",
+    "schedule>=1.2.0",
+    "plyer>=2.1.0",
+    "httpx>=0.25.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-mock>=3.12.0",
+    "pytest-cov>=4.1.0",
+]
+build = [
+    "pyinstaller>=6.0.0",
+]
+
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["app*", "core*", "jobs*", "models*"]
+exclude = ["tests*", "agent_outputs*"]
+
+[tool.setuptools.package-data]
+"*" = ["models/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+asyncio_mode = "auto"

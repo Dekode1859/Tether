@@ -1,0 +1,78 @@
+<svg viewBox="0 0 900 300" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      @keyframes pulse-red {
+        0%, 100% { opacity: 0.6; filter: drop-shadow(0 0 6px rgba(255, 50, 50, 0.5)); }
+        50% { opacity: 1; filter: drop-shadow(0 0 16px rgba(255, 50, 50, 0.9)); }
+      }
+      
+      @keyframes pulse-yellow {
+        0%, 100% { opacity: 0.6; filter: drop-shadow(0 0 6px rgba(255, 184, 50, 0.5)); }
+        50% { opacity: 1; filter: drop-shadow(0 0 16px rgba(255, 184, 50, 0.9)); }
+      }
+      
+      .pulse-red {
+        animation: pulse-red 2s ease-in-out infinite;
+      }
+      
+      .pulse-yellow {
+        animation: pulse-yellow 2.5s ease-in-out infinite;
+      }
+    </style>
+    
+    <!-- Icon 1 - Idle (Grey) -->
+    <g id="icon-idle">
+      <defs>
+        <radialGradient id="greyGradient" cx="35%" cy="35%">
+          <stop offset="0%" style="stop-color:#8a9aaa;stop-opacity:1" />
+          <stop offset="50%" style="stop-color:#5a6a7a;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#3a4a5a;stop-opacity:1" />
+        </radialGradient>
+      </defs>
+      <circle cx="150" cy="150" r="45" fill="url(#greyGradient)"/>
+      <ellipse cx="150" cy="150" rx="80" ry="60" fill="none" stroke="#7a8a9a" stroke-width="5" stroke-linecap="round" opacity="0.8"/>
+    </g>
+    
+    <!-- Icon 2 - Recording (Red) -->
+    <g id="icon-recording">
+      <defs>
+        <radialGradient id="redGradient" cx="35%" cy="35%">
+          <stop offset="0%" style="stop-color:#ff5555;stop-opacity:1" />
+          <stop offset="50%" style="stop-color:#ee2222;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#cc0000;stop-opacity:1" />
+        </radialGradient>
+      </defs>
+      <circle cx="450" cy="150" r="45" fill="url(#redGradient)"/>
+      <ellipse cx="450" cy="150" rx="80" ry="60" fill="none" stroke="#ff3333" stroke-width="5" stroke-linecap="round" opacity="1" class="pulse-red"/>
+      <!-- Glow halo behind icon -->
+      <circle cx="450" cy="150" r="50" fill="none" stroke="#ff4444" stroke-width="8" opacity="0.3" filter="blur(4px)"/>
+    </g>
+    
+    <!-- Icon 3 - Processing (Yellow) -->
+    <g id="icon-processing">
+      <defs>
+        <radialGradient id="yellowGradient" cx="35%" cy="35%">
+          <stop offset="0%" style="stop-color:#ffcc55;stop-opacity:1" />
+          <stop offset="50%" style="stop-color:#ffaa00;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#dd8800;stop-opacity:1" />
+        </radialGradient>
+      </defs>
+      <circle cx="750" cy="150" r="45" fill="url(#yellowGradient)"/>
+      <ellipse cx="750" cy="150" rx="80" ry="60" fill="none" stroke="#ffaa00" stroke-width="5" stroke-linecap="round" opacity="1" class="pulse-yellow"/>
+      <!-- Glow halo behind icon -->
+      <circle cx="750" cy="150" r="50" fill="none" stroke="#ffbb44" stroke-width="8" opacity="0.3" filter="blur(4px)"/>
+    </g>
+  </defs>
+  
+  <!-- Dark background -->
+  <rect width="900" height="300" fill="#0d1116"/>
+  
+  <!-- Icon 1 - Idle -->
+  <use href="#icon-idle"/>
+  
+  <!-- Icon 2 - Recording -->
+  <use href="#icon-recording"/>
+  
+  <!-- Icon 3 - Processing -->
+  <use href="#icon-processing"/>
+</svg>

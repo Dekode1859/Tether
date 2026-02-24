@@ -1,0 +1,97 @@
+<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      @keyframes orbit {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+      
+      @keyframes glow-pulse {
+        0%, 100% { opacity: 0.85; filter: drop-shadow(0 0 8px rgba(250, 235, 168, 0.8)); }
+        50% { opacity: 1; filter: drop-shadow(0 0 20px rgba(250, 235, 168, 1)); }
+      }
+      
+      .orbit-ring {
+        transform-origin: 200px 200px;
+        animation: orbit 12s linear infinite;
+      }
+      
+      .glow {
+        animation: glow-pulse 3s ease-in-out infinite;
+      }
+    </style>
+
+    <filter id="glowFilter">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- 3D split texture gradient -->
+    <linearGradient id="splitDepth" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.35)"/>
+      <stop offset="45%" stop-color="rgba(255,255,255,0.12)"/>
+      <stop offset="55%" stop-color="rgba(0,0,0,0.25)"/>
+      <stop offset="100%" stop-color="rgba(0,0,0,0.4)"/>
+    </linearGradient>
+
+    <!-- Soft blur for depth -->
+    <filter id="splitBlur">
+      <feGaussianBlur stdDeviation="1.8"/>
+    </filter>
+
+    <!-- Clip paths -->
+    <clipPath id="leftHalf">
+      <rect x="105" y="105" width="95" height="190"/>
+    </clipPath>
+
+    <clipPath id="rightHalf">
+      <rect x="200" y="105" width="95" height="190"/>
+    </clipPath>
+  </defs>
+
+  <!-- Dark background -->
+  <rect width="400" height="400" fill="#0d1116"/>
+
+  <!-- Base sphere -->
+  <circle cx="200" cy="200" r="95" fill="#2d3a48"/>
+
+  <!-- Left lighter half -->
+  <circle cx="200" cy="200" r="95" fill="#5a6b7f" clip-path="url(#leftHalf)"/>
+
+  <!-- Right darker half -->
+  <circle cx="200" cy="200" r="95" fill="#1a232f" clip-path="url(#rightHalf)"/>
+
+  <!-- 3D middle split texture -->
+  <rect
+    x="196"
+    y="110"
+    width="8"
+    height="180"
+    rx="4"
+    fill="url(#splitDepth)"
+    filter="url(#splitBlur)"
+    opacity="0.9"/>
+
+  <!-- Orbit ring -->
+  <g class="orbit-ring">
+    <ellipse cx="200" cy="200" rx="145" ry="110"
+      fill="none"
+      stroke="#faeaa8"
+      stroke-width="10"
+      stroke-linecap="round"
+      filter="url(#glowFilter)"
+      class="glow"/>
+  </g>
+
+  <!-- Orbit accent -->
+  <g class="orbit-ring">
+    <circle cx="345" cy="200" r="6"
+      fill="#faeaa8"
+      filter="url(#glowFilter)"
+      class="glow"
+      opacity="0.9"/>
+  </g>
+</svg>
