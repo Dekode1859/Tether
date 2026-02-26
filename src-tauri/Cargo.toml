@@ -1,0 +1,24 @@
+[package]
+name = "tether"
+version = "0.1.0"
+description = "Tether - Privacy-first thought ingestion engine"
+authors = ["Tether Team"]
+edition = "2021"
+
+[lib]
+name = "tether_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = ["tray-icon"] }
+tauri-plugin-opener = "2"
+tauri-plugin-global-shortcut = "2"
+tauri-plugin-shell = "2"
+tauri-plugin-log = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+log = "0.4"
+dirs = "5"
