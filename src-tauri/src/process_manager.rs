@@ -144,27 +144,11 @@ pub fn is_process_running(pid: u32) -> bool {
 }
 
 pub fn kill_process(pid: u32) -> bool {
-    info!("Attempting to kill process {}", pid);
+    info!("Force killing process {}", pid);
     
-    // First try graceful kill (CTRL_BREAK_EVENT equivalent)
-    let graceful = Command::new("taskkill")
-        .args(["/PID", &pid.to_string()])
-        .spawn();
-    
-    if graceful.is_ok() {
-        // Wait up to 15 seconds for graceful shutdown
-        std::thread::sleep(std::time::Duration::from_secs(15));
-        
-        // Check if still running
-        if !is_process_running(pid) {
-            info!("Process {} terminated gracefully", pid);
-            return true;
-        }
-        
-        warn!("Process {} still running after graceful kill, forcing...", pid);
-    }
-    
-    // Force kill
+    // Force kill immediately - don't wait for graceful termination
+    // This ensures the UI transitions immediately while the Python process
+    // handles cleanup (saving audio/transcription) before actually dying
     let force = Command::new("taskkill")
         .args(["/F", "/PID", &pid.to_string()])
         .spawn();

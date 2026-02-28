@@ -19,25 +19,13 @@ def get_daily_dir() -> Path:
     return daily_dir
 
 
-def get_spools_dir() -> Path:
-    """Get the spools directory for raw recordings."""
-    from ..utils import get_tether_dir
-
-    spools_dir = get_tether_dir() / "spools"
-    spools_dir.mkdir(exist_ok=True)
-    return spools_dir
-
-
 class Spool:
     """Handles appending transcribed text to daily vault files."""
 
-    def __init__(self, daily_dir: Path = None, use_spools: bool = False):
-        if use_spools:
-            self.daily_dir = get_spools_dir()
-        elif daily_dir is None:
-            self.daily_dir = get_daily_dir()
-        else:
-            self.daily_dir = daily_dir
+    def __init__(self, daily_dir: Path = None):
+        if daily_dir is None:
+            daily_dir = get_daily_dir()
+        self.daily_dir = daily_dir
 
     def _get_daily_path(self, date: Optional[datetime] = None) -> Path:
         """Get the daily file path for a given date."""

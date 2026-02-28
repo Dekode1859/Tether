@@ -2,13 +2,12 @@
 """
 Tether Engine - CLI for thought ingestion
 Usage:
-    python -m engine --spool-start        # Start recording, save audio, exit
-    python -m engine --spool-transcribe   # Transcribe last recording, save to spool
+    python -m engine --spool              # Start recording
     python -m engine --weave              # Process daily notes into knowledge graph
     python -m engine --ask "query"        # Query the vault
-    python -m engine --check-mic          # Check microphone access
-    python -m engine --check-ollama      # Check Ollama status
-    python -m engine --install-ollama     # Install Ollama
+    python -m engine --check-mic           # Check microphone access
+    python -m engine --check-ollama       # Check Ollama status
+    python -m engine --install-ollama      # Install Ollama
 """
 
 import argparse
@@ -18,12 +17,11 @@ import platform
 import subprocess
 import sys
 import time
-import signal
 from pathlib import Path
 
 from .utils import status, get_tether_dir, get_vault_dir
 from .audio import AudioRecorder
-from .stt import Transcriber, Spool, get_daily_dir, get_spools_dir
+from .stt import Transcriber, Spool, get_daily_dir
 from .ai import (
     LLMClient,
     ENTITY_EXTRACTION_PROMPT,
@@ -33,74 +31,44 @@ from .ai import (
 )
 
 
-def cmd_spool_start():
-    """Start recording audio and save to file. Exits gracefully."""
+def cmd_spool():
+    """Record audio and transcribe to vault."""
+    import threading
+
     status.write_status("recording", "spool", os.getpid())
     print("Recording started...", flush=True)
 
     recorder = AudioRecorder()
+    transcriber = Transcriber()
+    spool = Spool()
+
     recorder.start()
-
-    audio_path = None
-
-    def signal_handler(signum, frame):
-        print("\nStopping recording...", flush=True)
-        audio_path = recorder.stop()
-        if audio_path and audio_path.exists():
-            print(f"AUDIO_PATH:{audio_path}", flush=True)
-            print(f"Audio saved to: {audio_path}", flush=True)
-        else:
-            print("No audio recorded.", flush=True)
-        status.mark_idle()
-        sys.exit(0)
-
-    signal.signal(signal.SIGINT, signal_handler)
-    signal.signal(signal.SIGTERM, signal_handler)
 
     try:
         while recorder.is_recording():
             time.sleep(0.5)
     except KeyboardInterrupt:
-        pass
+        print("\nStopping recording...", flush=True)
 
     audio_path = recorder.stop()
 
     if audio_path and audio_path.exists():
-        print(f"AUDIO_PATH:{audio_path}", flush=True)
         print(f"Audio saved to: {audio_path}", flush=True)
+
+        print("Transcribing...", flush=True)
+        text = transcriber.transcribe(str(audio_path))
+
+        if text:
+            spool_path = spool.append(text)
+            print(f"Transcription saved to: {spool_path}", flush=True)
+            print(f"Text: {text}", flush=True)
+        else:
+            print("No text transcribed.", flush=True)
     else:
         print("No audio recorded.", flush=True)
 
     status.mark_idle()
     print("Recording stopped.", flush=True)
-
-
-def cmd_spool_transcribe(audio_path: str | None = None):
-    """Transcribe an audio file and save to spool."""
-    if not audio_path:
-        print("Error: No audio path provided", flush=True)
-        return
-
-    audio_file = Path(audio_path)
-    if not audio_file.exists():
-        print(f"Error: Audio file not found: {audio_path}", flush=True)
-        return
-
-    print(f"Transcribing: {audio_path}", flush=True)
-
-    transcriber = Transcriber()
-    spool = Spool(use_spools=True)
-
-    text = transcriber.transcribe(str(audio_path))
-
-    if text:
-        spool_path = spool.append(text)
-        print(f"TRANSCRIPTION:{text}", flush=True)
-        print(f"Transcription saved to: {spool_path}", flush=True)
-    else:
-        print("No text transcribed.", flush=True)
-
-    status.mark_idle()
 
 
 def cmd_weave():
@@ -434,14 +402,7 @@ def main():
     )
 
     parser.add_argument(
-        "--spool-start", action="store_true", help="Start recording, save audio, exit"
-    )
-
-    parser.add_argument(
-        "--spool-transcribe",
-        type=str,
-        metavar="AUDIO_PATH",
-        help="Transcribe audio file and save to spool",
+        "--spool", action="store_true", help="Start recording and transcribe"
     )
 
     parser.add_argument(
@@ -462,10 +423,8 @@ def main():
 
     args = parser.parse_args()
 
-    if args.spool_start:
-        cmd_spool_start()
-    elif args.spool_transcribe:
-        cmd_spool_transcribe(args.spool_transcribe)
+    if args.spool:
+        cmd_spool()
     elif args.weave:
         cmd_weave()
     elif args.ask:
